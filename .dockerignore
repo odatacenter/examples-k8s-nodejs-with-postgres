@@ -1,0 +1,7 @@
+.env
+.env.example
+Dockerfile
+docker-compose.yml
+kubernetes.yml
+README.md
+node_modules/
