@@ -1,0 +1,33 @@
+name: Build container image
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build-container:
+    runs-on:
+      group:  k8s-examples
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+        # here we login and push to local registry
+        # you need to set "(controlplaneip) privateregistry-svc.privateregistry.svc.cluster.local" in /etc/hosts and
+        # import "private-registry-ca.crt" CA certificate,
+        # https://ubuntu.com/server/docs/install-a-root-ca-certificate-in-the-trust-store
+        # IMPORTANT: this is just an example, don't use it in production
+      - name: Login to image registry
+        uses: docker/login-action@v3
+        with:
+          registry: 'privateregistry-svc.privateregistry.svc.cluster.local:30007'
+          username: ${{ secrets.CONTAINER_IMAGE_USER }}
+          password: ${{ secrets.CONTAINER_IMAGE_PASSWORD }}
+
+      - name: build the image
+        run: |
+          docker build . -t examples-k8s-nodejs-with-postgres:latest
+
+      - name: push image to registry
+        run: |
+          docker tag examples-k8s-nodejs-with-postgres:latest privateregistry-svc.privateregistry.svc.cluster.local:30007/examples-k8s-nodejs-with-postgres:latest
+          docker push privateregistry-svc.privateregistry.svc.cluster.local:30007/examples-k8s-nodejs-with-postgres:latest

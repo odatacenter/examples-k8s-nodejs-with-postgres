@@ -1,0 +1,110 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: privateregistry
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: privateregistry-auth
+  namespace: privateregistry
+data:
+  # to get the auth data secret, run: "htpasswd -c auth example", than "cat auth | base64 -w 0"
+  htpasswd: ZXhhbXBsZTokMnkkMDUkcDNHVG16ZlUveXNmcktKYnhUZlBkZVpRVEhwVXgyWmJrcXpUTzBHbXZMaUVtdkVZVzhQdXUNCg==
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: privateregistry-certs
+  namespace: privateregistry
+data:
+  # we are using self sign certificates for "privateregistry-svc.privateregistry.svc.cluster.local" domain, on production environment you need to set your own certificate for security purposes, don't use this certificates in production
+  # how to generate self sign certificates: https://deliciousbrains.com/ssl-certificate-authority-for-local-https-development/
+  # you need to trust the ./private-registry-ca.crt file on all nodes the privateregistry are using
+  cert.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUVJekNDQXd1Z0F3SUJBZ0lVVm1QenI3MThtd1lxNlhwRzlLREEwczRBRENrd0RRWUpLb1pJaHZjTkFRRUwKQlFBd2NURUxNQWtHQTFVRUJoTUNRVlV4RXpBUkJnTlZCQWdNQ2xOdmJXVXRVM1JoZEdVeElUQWZCZ05WQkFvTQpHRWx1ZEdWeWJtVjBJRmRwWkdkcGRITWdVSFI1SUV4MFpERXFNQ2dHQTFVRUF3d2hjSEpwZG1GMFpYSmxaMmx6CmRISjVMbk4yWXk1amJIVnpkR1Z5TG14dlkyRnNNQjRYRFRJME1EZ3dOakF3TVRJek5Wb1hEVEkyTVRFd09UQXcKTVRJek5Wb3dnWVV4Q3pBSkJnTlZCQVlUQWtGVk1STXdFUVlEVlFRSURBcFRiMjFsTFZOMFlYUmxNU0V3SHdZRApWUVFLREJoSmJuUmxjbTVsZENCWGFXUm5hWFJ6SUZCMGVTQk1kR1F4UGpBOEJnTlZCQU1NTlhCeWFYWmhkR1Z5ClpXZHBjM1J5ZVMxemRtTXVjSEpwZG1GMFpYSmxaMmx6ZEhKNUxuTjJZeTVqYkhWemRHVnlMbXh2WTJGc01JSUIKSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQXF0V05pRHFreFRmVGpPTS9uUnp6QkcrSApTM0Q5OXVySzE0TTJ1OTRoTklvZmswTllUK0VvN0ZxV01ST09jVC9KNG8zNUUvcm0zUEo3ejdwalBrRGJSVVhrCkJnckJ0WEZHbU1ZZmtkU0x5ZU5EcmtEcmxWWDJsQTZKYXNoZ3FDeDhBMkFETEdyYjBlbVh6YUxrRzd6cUNBWkUKWXJGMFZPNUhKaEQzUERaTDYxeTNtU2dxcWhkMGlRN1FXN3Yzb3dYdFRKWXpNT0NHOUgxRit1TnhlU0praDkyRAo3LzlaNVhETTNvS1NrTll4R09uaW42eUpHc1NvK0FZRmQ2RzJRTkdjOHhXZnpmaHBpNUtzSzA4YnphWXRGN3hxCmFzMlFJU21MWlZtbzE0WXB6cmdQcnptTGgvMUk4cXJlMFl2WFJtanE4dUM1bFRFdXVsbFE2YWh0N3ZpV1R3SUQKQVFBQm80R2RNSUdhTUI4R0ExVWRJd1FZTUJhQUZGZVQ2NzBtSGVCMU83MFo3M3VUSnBHUVNkL3pNQWtHQTFVZApFd1FDTUFBd0N3WURWUjBQQkFRREFnVHdNRUFHQTFVZEVRUTVNRGVDTlhCeWFYWmhkR1Z5WldkcGMzUnllUzF6CmRtTXVjSEpwZG1GMFpYSmxaMmx6ZEhKNUxuTjJZeTVqYkhWemRHVnlMbXh2WTJGc01CMEdBMVVkRGdRV0JCU3AKdjhyV2U2cWdmTDB2MVA4cGt4eENzd2Z0UFRBTkJna3Foa2lHOXcwQkFRc0ZBQU9DQVFFQUtueFE2MVA4RWtJVgo0ek5HaTcvUjZ2d2Ztc3VIM2lrNG1Cbmp1RFJpTExoUFFUcE1SQ2g2RVk2NzlpMC9VbEIxVWc5eWlhRXRNS3M0Ck5TTi8zUUV2R1crMnRrWjM3TzNqbEF2cEt5OTJZdzJiYTBDSTFIZ01SaWlNdUprUWJOeS94MVBSUEo5QTlQL1AKQlpIeCtwa0hPMWZHK2NQeW45SEJBMWtZenZETU8zVVEyS3NVdXZpL0tYZ2ZGWjhGZ25qdEwrRHYvTHQ2TUUxQgpwMll6MjF3dGtEc1NGRWVUSXQvK2R0QTd1Q2I3TG5YWThmcUZsWHkxRFdIKzFOZUlDMktRK0IvZDJsZkVBNUFFCmlTNjU1UUd1N1hRdW1GRHVrZzFmVkFFSHpjc3paYTVBU0xSZ1N0WCtWQ1BHQUlicDZTQlhxS25Ldmg1MmpLSkYKRWxnek90RTk1dz09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+  cert.key: LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUV2UUlCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktjd2dnU2pBZ0VBQW9JQkFRQ3ExWTJJT3FURk45T00KNHorZEhQTUViNGRMY1AzMjZzclhnemE3M2lFMGloK1RRMWhQNFNqc1dwWXhFNDV4UDhuaWpma1QrdWJjOG52UAp1bU0rUU50RlJlUUdDc0cxY1VhWXhoK1IxSXZKNDBPdVFPdVZWZmFVRG9scXlHQ29MSHdEWUFNc2F0dlI2WmZOCm91UWJ2T29JQmtSaXNYUlU3a2NtRVBjOE5rdnJYTGVaS0NxcUYzU0pEdEJidS9lakJlMU1sak13NEliMGZVWDYKNDNGNUltU0gzWVB2LzFubGNNemVncEtRMWpFWTZlS2ZySWtheEtqNEJnVjNvYlpBMFp6ekZaL04rR21Ma3F3cgpUeHZOcGkwWHZHcHF6WkFoS1l0bFdhalhoaW5PdUErdk9ZdUgvVWp5cXQ3Umk5ZEdhT3J5NExtVk1TNjZXVkRwCnFHM3UrSlpQQWdNQkFBRUNnZ0VBUXhhVWUyQlVYdUw2b0VTS01lQXhpNWRrOFhxUk1jdXBGeE4vaGkzSXFvSm4KdmdSZmhSY3VaQXQ3R2hETkNxcDdWUTVlTjd0N3VGODl3aWszV2paTUpoczVYaW9SUW5rV3VWNXMvVzhUNnBmbQpkMk1sWVVNZUQ2elp5R2FpbHNqSmR1WFl1VFBKMmRpN2RkVTNjYkV4MHk3cTRqdEFMUzVhSUpmZkQvVmV3VEhHClFjeXRXbjg5dUlhQ1JaUmFsQzVMdWpIcVR3dk1wUjBQN1owWUkySWc0Y3RqVkVSSTRLOGFyZFJsWTRDSzhUSTEKTHNJdlVEN2dTc0M4RldyUGRlSGNibys1S3FZczZCb1hycFQzaW43SkphTjFoYUN3bndpa3FtWjRFeXVPa09hQwphd3Z2UUJoaTZ1Yy92ZFVZRTMyOUl6T0MxWlJtdzNCTEVrMmU0aFFVTVFLQmdRRGtSeENEM003NnRQN3BCamJkCmQ2ZDJlVDlLWHY0N0xMSFp3ZEl6VkN6NUpyTmlaMEV5K01jUC9YR2YzZVNPZEJoZUtFcWJRRjQ3RVhJRVRSOEYKOWN4TTA4STVFbnRCS2dtZnNieGgxdityVVY5M3prMUN5UXI5bWZnb0lTOWQ0Wk0zY3FaSk9FSTVkZHByVGNnaQpXUUg2RHNXUVdlSzRBLzY4UVROMjV4Z3pDUUtCZ1FDL2xLQ0I5UkwvK1FxN3ZJclhCZjJEai81VUZoRm9NSFVhCnNVWWFNN0ozRVZsWTJnQjByYjF0eGU1QVpPd1BpeXlXRjZRbmE3WG9tUWhweU4vREJCUERNOGpsTHBSZU0wREgKRkZ1NndTN3JwT0JRSmw4Sm82bVZOdDFFQlVwTHpySTBlampIdno5ZlRyZ2lpWWtGajF0MHhwNFBhTEQya2RhegppL2p2MVJHY2x3S0JnUUNoekNqTmZZMEtyNHpadHpqZUFqZ2t4YzF4TmlFMTZmam80ZkxOeE1UWGwzR2Z0cFhFCnZnWEJ0SjU3ZERmU0xFRTFRNU9WdEtyVmJRa0dPVzlhdHh3bC9CVjJoRDN1TXhCOUt1bmQ0eGgxNGdncmo0SzkKYW1lcTFoM0l1N1NwOHY5NFZuKzc5KzhnY1FMdCtVUjM2K1IxeTFDR2Z0OHVGRTdTT2RoelYxcVVtUUtCZ0RXaQp1cjBuaThZMlJ4Y0FWaTZVOHNEZWsybWZOQWhqYUtXc2M5L3FFVkRjZnBNdGxXc1ZLUytPZG9GNHY4NHFQTFZZCnNSQ0lTMGx2YnJlUEVYWmJzZHk0cHNuakhJNnk4clBKczFTNXVSVW45OVQ0cVNyZHN5Q2ZWNXN2ai9saFNPc0EKUE4xUFljS2hHMVF3QlRpVlJobVBjYmtHcW1TZHQrcFVpY0U3ZWM3SkFvR0FIcnZsQW1CYmhFcWZpc1RJZzNxUgozR3hab1A2RGNjd0dYampxZElFTmZPNWVVeVdLYktnKzY1QVExWTBEaDBReGRoL2tLNTc4MTk3OGhDT1ExM0FoCmVHUkJtdHVJampNN1d0bTNwNStZRXdqY1VycktobzJ3YVFNQTFwdUN1clJOSnFjYVB2VytWaTdKbStQaE1XTkUKZW1GcHo2MFVYUXlHYlhYd1U3V2hjb2M9Ci0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0K
+---
+# https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: registry-data
+  namespace: privateregistry
+  labels:
+    app: registry-data
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: privateregistry-deploy
+  namespace: privateregistry
+  labels:
+    app: registry
+spec:
+  selector:
+    matchLabels:
+      app: registry
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: registry
+    spec:
+      containers:
+      - name: registry
+        image: registry:2
+        env:
+        - name: REGISTRY_AUTH
+          value: htpasswd
+        - name: REGISTRY_AUTH_HTPASSWD_PATH
+          value: /auth/htpasswd
+        - name: REGISTRY_AUTH_HTPASSWD_REALM
+          value: 'Registry Realm'
+        - name: REGISTRY_HTTP_TLS_CERTIFICATE
+          value: /certs/cert.crt
+        - name: REGISTRY_HTTP_TLS_KEY
+          value: /certs/cert.key
+        ports:
+        - containerPort: 5000
+          name: privateregistry
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/registry
+        - name: auth
+          mountPath: /auth/
+          readOnly: true
+        - name: certs
+          mountPath: /certs/
+      volumes:
+        - name: auth
+          secret:
+            secretName: privateregistry-auth
+        - name: certs
+          secret:
+            secretName: privateregistry-certs
+        - name: data
+          persistentVolumeClaim:
+            claimName: registry-data
+---
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: privateregistry-svc
+  namespace: privateregistry
+spec:
+  selector:
+    app: registry
+  type: NodePort # https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport
+  ports:
+  - name: privateregistry
+    protocol: TCP
+    port: 443
+    targetPort: 5000
+    nodePort: 30007

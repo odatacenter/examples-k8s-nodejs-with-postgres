@@ -1,3 +1,11 @@
+# using private registry, see ./deploy-private-registry.yml
+apiVersion: v1
+kind: Secret
+type: kubernetes.io/dockerconfigjson
+metadata:
+  name: privateregistry
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJwcml2YXRlcmVnaXN0cnktc3ZjLnByaXZhdGVyZWdpc3RyeS5zdmMuY2x1c3Rlci5sb2NhbDozMDAwNyI6eyJ1c2VybmFtZSI6ImV4YW1wbGUiLCJwYXNzd29yZCI6InNlY3JldCIsImVtYWlsIjoiKioqKioiLCJhdXRoIjoiWlhoaGJYQnNaVHB6WldOeVpYUT0ifX19 # {"auths": {"privateregistry-svc.privateregistry.svc.cluster.local:30007/examples-k8s-nodejs-with-postgres:latest": {"auth": "ZXhhbXBsZTpzZWNyZXQ="}}}
 ---
 # https://kubernetes.io/docs/concepts/configuration/configmap/
 apiVersion: v1
@@ -110,9 +118,11 @@ spec:
         # Init containers are exactly like regular containers, except:
           # - Init containers always run to completion.
           # - Each init container must complete successfully before the next one starts.
+      imagePullSecrets:
+      - name: privateregistry
       containers:
       - name: api
-        image: ghcr.io/rbm0407/nodejs-with-postgres-api-example:v1
+        image: privateregistry-svc.privateregistry.svc.cluster.local:30007/examples-k8s-nodejs-with-postgres:latest
         imagePullPolicy: Always
         envFrom:
           - configMapRef:
